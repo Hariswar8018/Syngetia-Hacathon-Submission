@@ -1,6 +1,6 @@
 // IMPORTANT: For GitHub/Railway Deployment, change this to your Node.js API Service URL!
 // Example: const API_BASE_URL = 'https://agrimind-api-production.up.railway.app';
-const API_BASE_URL = 'http://localhost:3001';
+const API_BASE_URL = 'https://syngetia-hacathon-submission-production.up.railway.app';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch Recent Campaigns from Database
