@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriMind AI - Syngenta Campaign Studio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-leaf text-primary"></i>
+                <span>Syngenta <br><small>AI Campaign Studio</small></span>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-target="new-campaign">
+                    <i class="fa-solid fa-plus"></i> New Campaign
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-layer-group"></i> Campaigns
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-users"></i> Farmer Segments
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-line"></i> Analytics
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-folder-open"></i> Content Library
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+            </nav>
+            <div class="user-profile">
+                <img src="https://i.pravatar.cc/150?img=11" alt="User">
+                <div class="user-info">
+                    <h4>Marketing User</h4>
+                    <p>Maharashtra Region</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Section: Dashboard -->
+            <section id="dashboard" class="page-section active">
+                <div class="hero-banner">
+                    <div class="hero-text">
+                        <h1>AI-Powered Campaigns.<br>Stronger Connections.<br>Better Harvests.</h1>
+                        <p>Create hyperlocal, personalized campaigns that reach the right farmer, with the right message, at the right time.</p>
+                        <button class="btn-primary" onclick="switchTab('new-campaign')"><i class="fa-solid fa-plus"></i> Create New Campaign</button>
+                    </div>
+                    <div class="hero-image">
+                        <!-- Abstract overlay instead of actual image for now, or a placeholder -->
+                        <div class="abstract-shape"></div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-regular fa-file-lines"></i></div>
+                        <div class="stat-info">
+                            <h3>32</h3>
+                            <p>Campaigns Created This Month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-users-viewfinder"></i></div>
+                        <div class="stat-info">
+                            <h3>12.4K</h3>
+                            <p>Farmers Reached This Month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="stat-info">
+                            <h3>78%</h3>
+                            <p>Avg. Engagement This Month</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <div class="stat-info">
+                            <h3>24</h3>
+                            <p>Active Districts Covered</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-campaigns">
+                    <div class="section-header">
+                        <h2>Recent Campaigns</h2>
+                        <a href="#">View All</a>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Campaign Name</th>
+                                <th>Crop</th>
+                                <th>Region</th>
+                                <th>Language</th>
+                                <th>Created On</th>
+                                <th>Engagement</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recent-campaigns-body">
+                            <!-- Populated by JS from PostgreSQL Database -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Section: New Campaign -->
+            <section id="new-campaign" class="page-section">
+                <div class="form-container">
+                    <div class="form-header">
+                        <h2>Create New Campaign</h2>
+                        <p>Provide farm and environmental context to generate personalized campaigns.</p>
+                    </div>
+                    <form id="campaign-form">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>State</label>
+                                <select name="state" required>
+                                    <option value="Maharashtra" selected>Maharashtra</option>
+                                    <option value="Odisha">Odisha</option>
+                                    <option value="Haryana">Haryana</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>District</label>
+                                <select name="district" required>
+                                    <option value="Yavatmal" selected>Yavatmal</option>
+                                    <option value="Akola">Akola</option>
+                                    <option value="Amravati">Amravati</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Crop</label>
+                                <select name="crop" required>
+                                    <option value="Cotton" selected>Cotton</option>
+                                    <option value="Rice">Rice</option>
+                                    <option value="Wheat">Wheat</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Season</label>
+                                <select name="season" required>
+                                    <option value="Kharif" selected>Kharif</option>
+                                    <option value="Rabi">Rabi</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Growth Stage</label>
+                                <select name="growthStage" required>
+                                    <option value="Boll Formation" selected>Boll Formation</option>
+                                    <option value="Vegetative">Vegetative</option>
+                                    <option value="Flowering">Flowering</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Pest / Disease Risk</label>
+                                <select name="pestRisk" required>
+                                    <option value="High - Pink Bollworm" selected>High - Pink Bollworm</option>
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Farmer Segment</label>
+                                <select name="segment" required>
+                                    <option value="Smallholder (< 2 acres)" selected>Smallholder (< 2 acres)</option>
+                                    <option value="Commercial">Commercial</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Preferred Language</label>
+                                <select name="language" required>
+                                    <option value="Marathi" selected>Marathi</option>
+                                    <option value="Hindi">Hindi</option>
+                                    <option value="Odia">Odia</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn-primary" id="btn-generate">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Campaign
+                            </button>
+                        </div>
+                        <p class="helper-text"><i class="fa-solid fa-robot"></i> AI will analyze 50+ signals including weather, pest alerts, crop stage, historical engagement, and language preference.</p>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Section: Campaign Results (Generated) -->
+            <section id="campaign-results" class="page-section">
+                <div class="results-header">
+                    <h2>Campaign Generated Successfully! <i class="fa-solid fa-circle-check text-success"></i></h2>
+                    <p id="results-subtitle">Here's your AI-powered campaign for Cotton farmers in Yavatmal, Maharashtra.</p>
+                </div>
+
+                <!-- Feature 1: Hyperlocal Campaign Simulator -->
+                <div class="feature-section mt-5">
+                    <div class="section-header-row">
+                        <h3><i class="fa-solid fa-users-viewfinder text-primary"></i> Hyperlocal Campaign Simulator</h3>
+                        <span class="badge success">Personalization at Scale</span>
+                    </div>
+                    <p class="text-muted mb-4">See how the AI automatically adapts the channel, tone, and content for different segments simultaneously.</p>
+                    
+                    <div class="personas-layout">
+                        <!-- Persona Switcher Sidebar -->
+                        <div class="personas-menu">
+                            <button class="persona-btn active" data-persona="farmerA">
+                                <div class="p-icon"><i class="fa-solid fa-user"></i></div>
+                                <div class="p-text">
+                                    <strong>Farmer A</strong>
+                                    <small>Low Literacy / Feature Phone</small>
+                                </div>
+                            </button>
+                            <button class="persona-btn" data-persona="farmerB">
+                                <div class="p-icon"><i class="fa-solid fa-user-astronaut"></i></div>
+                                <div class="p-text">
+                                    <strong>Farmer B</strong>
+                                    <small>Young / Smartphone</small>
+                                </div>
+                            </button>
+                            <button class="persona-btn" data-persona="retailer">
+                                <div class="p-icon"><i class="fa-solid fa-store"></i></div>
+                                <div class="p-text">
+                                    <strong>Retailer</strong>
+                                    <small>Inventory Manager</small>
+                                </div>
+                            </button>
+                        </div>
+                        
+                        <!-- Persona Content Display -->
+                        <div class="persona-display">
+                            <div class="p-header">
+                                <h4 id="res-p-name">Farmer A</h4>
+                                <span class="badge" id="res-p-channel">Voice Call</span>
+                            </div>
+                            <p class="p-profile text-muted mb-4" id="res-p-profile">Age 58 | Feature phone | Low literacy | Marathi</p>
+                            
+                            <div class="message-preview generic-preview">
+                                <div class="preview-body" id="res-p-content">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+                            
+                            <div class="engagement-mini mt-4">
+                                <strong>Predicted Engagement: </strong> <span id="res-p-engagement" class="text-success font-weight-bold">76%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: AI Campaign Battle Arena -->
+                <div class="feature-section mt-5">
+                    <div class="section-header-row">
+                        <h3><i class="fa-solid fa-khanda text-primary"></i> AI Campaign Battle Arena</h3>
+                        <span class="badge warning">A/B/C Testing Engine</span>
+                    </div>
+                    <p class="text-muted mb-4">The AI generated 3 distinct messaging angles. Here is the predicted receptivity for each based on historical data.</p>
+                    
+                    <div class="battle-arena-grid" id="res-battle-arena">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Feature 3: AI Explainability Map -->
+                <div class="feature-section mt-5 mb-5">
+                    <div class="section-header-row">
+                        <h3><i class="fa-solid fa-diagram-project text-primary"></i> AI Explainability Map</h3>
+                        <span class="badge primary">Decision Reasoning</span>
+                    </div>
+                    <p class="text-muted mb-4">Understand exactly why this campaign was generated. Judges love transparency!</p>
+                    
+                    <div class="explain-flow" id="res-explain-flow">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loader-overlay" id="loader">
+        <div class="spinner"></div>
+        <p>Analyzing hyperlocal signals & generating content...</p>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
