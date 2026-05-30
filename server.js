@@ -46,8 +46,8 @@ app.post('/api/generate-campaign', async (req, res) => {
             dayofweek: new Date().getDay()
         };
         
-        // Ensure ML API URL is configurable, default to localhost for demo
-        const mlApiUrl = process.env.ML_API_URL || 'http://localhost:8000/predict';
+        // Ensure ML API URL is configurable, default to Railway live URL for demo
+        const mlApiUrl = process.env.ML_API_URL || 'https://patient-happiness-production-7b7c.up.railway.app/predict';
         const mlResponse = await axios.post(mlApiUrl, mlPayload, { timeout: 3000 });
         
         if (mlResponse.data && mlResponse.data.engagement_percentage) {
