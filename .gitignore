@@ -1,0 +1,14 @@
+.env
+node_modules
+/.env
+/node_modules
+.env
+*.txt
+*.pdf
+*.png
+*.jpg
+*.jpeg
+/syngetia node js server/.env
+/syngetia node js server/node_modules
+/syngetia node js server/.env
+/syngetia node js server/node_modules
