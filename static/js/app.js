@@ -1,3 +1,7 @@
+// IMPORTANT: For GitHub/Railway Deployment, change this to your Node.js API Service URL!
+// Example: const API_BASE_URL = 'https://agrimind-api-production.up.railway.app';
+const API_BASE_URL = 'http://localhost:3001';
+
 document.addEventListener('DOMContentLoaded', () => {
     // Fetch Recent Campaigns from Database
     fetchRecentCampaigns();
@@ -47,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             try {
                 // Call Node.js Backend API
-                const response = await fetch('http://localhost:3001/api/generate-campaign', {
+                const response = await fetch(`${API_BASE_URL}/api/generate-campaign`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -118,7 +122,7 @@ function switchTab(targetId) {
 
 async function fetchRecentCampaigns() {
     try {
-        const response = await fetch('http://localhost:3001/api/campaigns');
+        const response = await fetch(`${API_BASE_URL}/api/campaigns`);
         const campaigns = await response.json();
         
         const tbody = document.getElementById('recent-campaigns-body');
