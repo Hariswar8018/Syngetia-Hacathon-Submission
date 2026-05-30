@@ -85,10 +85,23 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const pKey = btn.getAttribute('data-persona');
             if (window.campaignData && window.campaignData.personas) {
-                updatePersonaDisplay(window.campaignData.personas[pKey]);
+                updatePersonaDisplay(window.campaignData.personas[pKey], pKey);
             }
         });
     });
+
+    // Handle Audio Language switching
+    const voiceLangSelect = document.getElementById('voice-lang');
+    if (voiceLangSelect) {
+        voiceLangSelect.addEventListener('change', (e) => {
+            const lang = e.target.value;
+            const audioEl = document.getElementById('voice-audio');
+            if (audioEl && ['hi', 'mr', 'ta'].includes(lang)) {
+                audioEl.src = `/static/audio/voice_campaign_${lang}.mp3`;
+                audioEl.load();
+            }
+        });
+    }
 });
 
 function switchTab(targetId) {
@@ -137,12 +150,25 @@ async function fetchRecentCampaigns() {
     }
 }
 
-function updatePersonaDisplay(personaData) {
+function updatePersonaDisplay(personaData, personaId) {
+    if (!personaData) return;
     document.getElementById('res-p-name').innerText = personaData.name;
     document.getElementById('res-p-channel').innerText = personaData.channel;
     document.getElementById('res-p-profile').innerText = personaData.profile;
     document.getElementById('res-p-content').innerText = personaData.content;
     document.getElementById('res-p-engagement').innerText = personaData.engagement + "%";
+
+    // Show audio player only for Low Literacy persona
+    const audioContainer = document.getElementById('voice-player-container');
+    if (audioContainer) {
+        if (personaId === 'lowLiteracy') {
+            audioContainer.style.display = 'block';
+        } else {
+            audioContainer.style.display = 'none';
+            const audioEl = document.getElementById('voice-audio');
+            if (audioEl) audioEl.pause();
+        }
+    }
 }
 
 function populateResults(data) {
@@ -152,9 +178,53 @@ function populateResults(data) {
     document.getElementById('results-subtitle').innerText = 
         `Here's your AI-powered campaign for ${details.crop} farmers in ${details.district}, ${details.state}.`;
 
-    // 1. Init Persona Display (Default to Farmer A)
-    if (data.personas && data.personas.farmerA) {
-        updatePersonaDisplay(data.personas.farmerA);
+    // 1. Init Persona Display (Default to traditional)
+    if (data.personas && data.personas.traditional) {
+        updatePersonaDisplay(data.personas.traditional, 'traditional');
+    }
+    
+    // 1.5 Update AI Intelligence Panel (ML Model) & ROI Panel
+    if (data.mlIntelligence) {
+        document.getElementById('res-ml-score').innerText = data.mlIntelligence.score + '%';
+        const hList = document.getElementById('res-ml-heuristics');
+        if (hList) {
+            hList.innerHTML = '';
+            data.mlIntelligence.heuristics.forEach(h => {
+                const li = document.createElement('li');
+                li.style.marginBottom = '6px';
+                li.innerHTML = `<i class="fa-solid fa-check text-success" style="margin-right: 8px;"></i> ${h}`;
+                hList.appendChild(li);
+            });
+        }
+
+        // --- Calculate Executive Business Decision Metrics (ROI) ---
+        const score = data.mlIntelligence.score; // e.g. 74
+        const reach = 50000;
+        const predictedEngagement = Math.floor(reach * (score / 100));
+        const expectedLeads = Math.floor(predictedEngagement * 0.15); // 15% of engaged become leads
+        const inquiries = Math.floor(expectedLeads * 0.45); // 45% of leads inquire
+        
+        // Let's assume average product order value is ₹400
+        const revenue = inquiries * 400; 
+        const revenueLakhs = (revenue / 100000).toFixed(1);
+
+        const roiReach = document.getElementById('roi-reach');
+        const roiEng = document.getElementById('roi-engagement');
+        const roiLeads = document.getElementById('roi-leads');
+        const roiInq = document.getElementById('roi-inquiries');
+        const roiRev = document.getElementById('roi-revenue');
+
+        if (roiReach) roiReach.innerText = reach.toLocaleString();
+        if (roiEng) roiEng.innerText = predictedEngagement.toLocaleString();
+        if (roiLeads) roiLeads.innerText = expectedLeads.toLocaleString();
+        if (roiInq) roiInq.innerText = inquiries.toLocaleString();
+        if (roiRev) roiRev.innerText = `₹${revenueLakhs} Lakhs`;
+        
+        // Also update the Timeline Simulation dynamic numbers
+        const tEng = document.querySelector('.t-animate-eng');
+        const tRev = document.querySelector('.t-animate-rev');
+        if (tEng) tEng.innerText = `${score}% Opened`;
+        if (tRev) tRev.innerText = `₹${revenueLakhs} Lakhs`;
     }
 
     // 2. Build Battle Arena

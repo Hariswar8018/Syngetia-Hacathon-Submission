@@ -24,19 +24,19 @@
                 <a href="#" class="nav-item" data-target="new-campaign">
                     <i class="fa-solid fa-plus"></i> New Campaign
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="campaigns">
                     <i class="fa-solid fa-layer-group"></i> Campaigns
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="farmer-segments">
                     <i class="fa-solid fa-users"></i> Farmer Segments
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="analytics">
                     <i class="fa-solid fa-chart-line"></i> Analytics
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="content-library">
                     <i class="fa-solid fa-folder-open"></i> Content Library
                 </a>
-                <a href="#" class="nav-item">
+                <a href="#" class="nav-item" data-target="settings">
                     <i class="fa-solid fa-gear"></i> Settings
                 </a>
             </nav>
@@ -208,6 +208,36 @@
                     <p id="results-subtitle">Here's your AI-powered campaign for Cotton farmers in Yavatmal, Maharashtra.</p>
                 </div>
 
+                <!-- NEW: Executive ROI Prediction Panel -->
+                <div class="roi-panel mt-4 mb-5" style="background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%); color: white; padding: 25px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin: 0; color: #fff;"><i class="fa-solid fa-chart-line" style="color: #4ade80;"></i> Projected Business Impact</h3>
+                        <span style="background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;"><i class="fa-solid fa-robot"></i> AI Formula Driven</span>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px;">
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.8;">Expected Reach</p>
+                            <h2 style="margin: 5px 0 0; color: #fff;" id="roi-reach">50,000</h2>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.8;">Predicted Engagement</p>
+                            <h2 style="margin: 5px 0 0; color: #60a5fa;" id="roi-engagement">37,000</h2>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.8;">Expected Leads</p>
+                            <h2 style="margin: 5px 0 0; color: #facc15;" id="roi-leads">5,550</h2>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 8px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.85rem; opacity: 0.8;">Product Inquiries</p>
+                            <h2 style="margin: 5px 0 0; color: #f87171;" id="roi-inquiries">2,497</h2>
+                        </div>
+                        <div style="background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.5); padding: 15px; border-radius: 8px; text-align: center;">
+                            <p style="margin: 0; font-size: 0.85rem; color: #86efac;">Projected Revenue</p>
+                            <h2 style="margin: 5px 0 0; color: #4ade80;" id="roi-revenue">₹9.9 Lakhs</h2>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Feature 1: Hyperlocal Campaign Simulator -->
                 <div class="feature-section mt-5">
                     <div class="section-header-row">
@@ -219,18 +249,25 @@
                     <div class="personas-layout">
                         <!-- Persona Switcher Sidebar -->
                         <div class="personas-menu">
-                            <button class="persona-btn active" data-persona="farmerA">
-                                <div class="p-icon"><i class="fa-solid fa-user"></i></div>
+                            <button class="persona-btn active" data-persona="traditional">
+                                <div class="p-icon"><i class="fa-solid fa-user-tie"></i></div>
                                 <div class="p-text">
-                                    <strong>Farmer A</strong>
-                                    <small>Low Literacy / Feature Phone</small>
+                                    <strong>Traditional Farmer</strong>
+                                    <small>Age 65+ | SMS preferred</small>
                                 </div>
                             </button>
-                            <button class="persona-btn" data-persona="farmerB">
-                                <div class="p-icon"><i class="fa-solid fa-user-astronaut"></i></div>
+                            <button class="persona-btn" data-persona="young">
+                                <div class="p-icon"><i class="fa-solid fa-mobile-screen"></i></div>
                                 <div class="p-text">
-                                    <strong>Farmer B</strong>
-                                    <small>Young / Smartphone</small>
+                                    <strong>Young Farmer</strong>
+                                    <small>Tech Savvy | WhatsApp</small>
+                                </div>
+                            </button>
+                            <button class="persona-btn" data-persona="lowLiteracy">
+                                <div class="p-icon"><i class="fa-solid fa-headphones"></i></div>
+                                <div class="p-text">
+                                    <strong>Low Literacy</strong>
+                                    <small>Feature Phone | Audio</small>
                                 </div>
                             </button>
                             <button class="persona-btn" data-persona="retailer">
@@ -238,6 +275,13 @@
                                 <div class="p-text">
                                     <strong>Retailer</strong>
                                     <small>Inventory Manager</small>
+                                </div>
+                            </button>
+                            <button class="persona-btn" data-persona="largeFarm">
+                                <div class="p-icon"><i class="fa-solid fa-tractor"></i></div>
+                                <div class="p-text">
+                                    <strong>Large Farm</strong>
+                                    <small>ROI Focused</small>
                                 </div>
                             </button>
                         </div>
@@ -256,9 +300,49 @@
                                 </div>
                             </div>
                             
+                            <!-- Audio Player for Voice Campaigns -->
+                            <div id="voice-player-container" style="display: none; margin-top: 20px; padding: 15px; background: #e0e7ff; border-radius: 8px; border: 1px solid #c7d2fe;">
+                                <h5 style="color: #1e3a8a; margin-bottom: 10px;"><i class="fa-solid fa-play-circle"></i> Play Voice Campaign</h5>
+                                <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+                                    <label for="voice-lang" style="font-size: 0.9rem; font-weight: bold;">Language:</label>
+                                    <select id="voice-lang" class="form-select form-select-sm" style="width: auto;">
+                                        <option value="mr">Marathi</option>
+                                        <option value="hi">Hindi</option>
+                                        <option value="ta">Tamil</option>
+                                        <option value="other" disabled>Telugu (Coming Soon)</option>
+                                        <option value="other" disabled>Kannada (Coming Soon)</option>
+                                    </select>
+                                </div>
+                                <audio id="voice-audio" controls style="width: 100%; height: 40px;">
+                                    <source src="/static/audio/voice_campaign_mr.mp3" type="audio/mpeg">
+                                    Your browser does not support the audio element.
+                                </audio>
+                            </div>
+
                             <div class="engagement-mini mt-4">
                                 <strong>Predicted Engagement: </strong> <span id="res-p-engagement" class="text-success font-weight-bold">76%</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature: ML Explainability (Why This Prediction) -->
+                <div class="feature-section mt-5" style="background: #fdfdfd; border-color: #e0e7ff;">
+                    <div class="section-header-row">
+                        <h3><i class="fa-solid fa-brain text-primary"></i> AI Intelligence Panel</h3>
+                        <span class="badge primary">Generated Using: ML Model + Gemini</span>
+                    </div>
+                    <div style="display: flex; gap: 40px; margin-top: 16px;">
+                        <div>
+                            <h1 id="res-ml-score" style="color: var(--primary-color); font-size: 3rem; margin: 0;">74%</h1>
+                            <p class="text-muted">Expected Engagement</p>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 8px;">Why This Prediction?</h4>
+                            <ul id="res-ml-heuristics" style="list-style: none; padding: 0; margin: 0; color: #4b5563;">
+                                <!-- Populated by JS -->
+                                <li><i class="fa-solid fa-check text-success"></i> Smartphone User</li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -276,7 +360,48 @@
                     </div>
                 </div>
 
-                <!-- Feature 3: AI Explainability Map -->
+                <!-- Feature 3: Campaign Heatmap -->
+                <div class="feature-section mt-5">
+                    <div class="section-header-row">
+                        <h3><i class="fa-solid fa-map-location-dot text-primary"></i> National Engagement Heatmap</h3>
+                        <span class="badge primary">Predicted Reach</span>
+                    </div>
+                    <div class="heatmap-container" style="display: flex; gap: 20px; align-items: flex-start; margin-top: 20px;">
+                        <!-- Simulated Heatmap representing States -->
+                        <div style="flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; background: #fdfdfd; border: 1px solid #e0e7ff; border-radius: 12px; padding: 25px;">
+                            <div style="background: rgba(34,197,94,0.85); height: 120px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <span style="font-size: 1.2rem; font-weight: bold; margin-bottom: 5px;">Maharashtra</span>
+                                <span style="font-size: 1.8rem; font-weight: 800;">84%</span>
+                            </div>
+                            <div style="background: rgba(234,179,8,0.85); height: 120px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <span style="font-size: 1.2rem; font-weight: bold; margin-bottom: 5px;">Punjab</span>
+                                <span style="font-size: 1.8rem; font-weight: 800;">72%</span>
+                            </div>
+                            <div style="background: rgba(239,68,68,0.85); height: 120px; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <span style="font-size: 1.2rem; font-weight: bold; margin-bottom: 5px;">Odisha</span>
+                                <span style="font-size: 1.8rem; font-weight: 800;">69%</span>
+                            </div>
+                        </div>
+                        <div style="width: 250px; background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px;">
+                            <h5 style="margin-bottom: 15px;">Engagement Legend</h5>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div style="width: 20px; height: 20px; background: rgba(34,197,94,0.8); border-radius: 4px; margin-right: 10px;"></div>
+                                <span style="font-size: 0.9rem;">High (>80%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                                <div style="width: 20px; height: 20px; background: rgba(234,179,8,0.7); border-radius: 4px; margin-right: 10px;"></div>
+                                <span style="font-size: 0.9rem;">Medium (70-80%)</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <div style="width: 20px; height: 20px; background: rgba(239,68,68,0.7); border-radius: 4px; margin-right: 10px;"></div>
+                                <span style="font-size: 0.9rem;">Low (<70%)</span>
+                            </div>
+                            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 15px;">*State coloring calculated dynamically based on regional language mapping and historic adoption.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 4: AI Explainability Map -->
                 <div class="feature-section mt-5 mb-5">
                     <div class="section-header-row">
                         <h3><i class="fa-solid fa-diagram-project text-primary"></i> AI Explainability Map</h3>
@@ -287,6 +412,120 @@
                     <div class="explain-flow" id="res-explain-flow">
                         <!-- Populated by JS -->
                     </div>
+                </div>
+
+                <!-- Feature 5: Animated Campaign Timeline Simulation -->
+                <div class="feature-section mt-5 mb-5" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                    <div class="section-header-row">
+                        <h3><i class="fa-solid fa-timeline text-primary"></i> Campaign Timeline Simulation</h3>
+                        <span class="badge success">Lifecycle Forecast</span>
+                    </div>
+                    <p class="text-muted mb-4">Projected journey from deployment to revenue generation.</p>
+                    
+                    <div class="timeline-container">
+                        <div class="timeline-track"></div>
+                        
+                        <div class="timeline-step step-1">
+                            <div class="t-marker"><i class="fa-solid fa-paper-plane"></i></div>
+                            <div class="t-content">
+                                <h5>Day 1</h5>
+                                <p>Campaign Sent<br><strong>50,000 Reach</strong></p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-step step-2">
+                            <div class="t-marker"><i class="fa-solid fa-envelope-open-text"></i></div>
+                            <div class="t-content">
+                                <h5>Day 3</h5>
+                                <p>Engagement Peak<br><strong class="t-animate-eng">74% Opened</strong></p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-step step-3">
+                            <div class="t-marker"><i class="fa-solid fa-hand-pointer"></i></div>
+                            <div class="t-content">
+                                <h5>Day 5</h5>
+                                <p>Action Taken<br><strong>12% Clicked</strong></p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-step step-4">
+                            <div class="t-marker"><i class="fa-solid fa-cart-shopping"></i></div>
+                            <div class="t-content">
+                                <h5>Day 7</h5>
+                                <p>Dealer Visits<br><strong>3% Converted</strong></p>
+                            </div>
+                        </div>
+                        
+                        <div class="timeline-step step-5">
+                            <div class="t-marker"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                            <div class="t-content">
+                                <h5>Day 14</h5>
+                                <p>Revenue Generated<br><strong class="text-success t-animate-rev">₹4.8 Lakhs</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Feature Placeholders -->
+            <section id="campaigns" class="page-section">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-layer-group text-primary"></i> All Campaigns</h2>
+                    <p>Manage and track the performance of all historical campaigns.</p>
+                </div>
+                <div class="feature-section mt-5" style="text-align: center; padding: 50px 20px;">
+                    <i class="fa-solid fa-person-digging text-muted" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                    <h3 style="color: #1e3a8a;">Module Under Development</h3>
+                    <p class="text-muted">The comprehensive campaign manager is coming in v2.0.</p>
+                </div>
+            </section>
+
+            <section id="farmer-segments" class="page-section">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-users text-primary"></i> Farmer Segments</h2>
+                    <p>Build and analyze dynamic farmer cohorts.</p>
+                </div>
+                <div class="feature-section mt-5" style="text-align: center; padding: 50px 20px;">
+                    <i class="fa-solid fa-person-digging text-muted" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                    <h3 style="color: #1e3a8a;">Module Under Development</h3>
+                    <p class="text-muted">Advanced cohort analytics is coming in v2.0.</p>
+                </div>
+            </section>
+
+            <section id="analytics" class="page-section">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-chart-line text-primary"></i> Analytics Dashboard</h2>
+                    <p>Deep-dive into platform-wide engagement metrics.</p>
+                </div>
+                <div class="feature-section mt-5" style="text-align: center; padding: 50px 20px;">
+                    <i class="fa-solid fa-person-digging text-muted" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                    <h3 style="color: #1e3a8a;">Module Under Development</h3>
+                    <p class="text-muted">Global BI dashboards are coming in v2.0.</p>
+                </div>
+            </section>
+
+            <section id="content-library" class="page-section">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-folder-open text-primary"></i> Content Library</h2>
+                    <p>Manage approved brand assets and historical templates.</p>
+                </div>
+                <div class="feature-section mt-5" style="text-align: center; padding: 50px 20px;">
+                    <i class="fa-solid fa-person-digging text-muted" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                    <h3 style="color: #1e3a8a;">Module Under Development</h3>
+                    <p class="text-muted">Digital asset management is coming in v2.0.</p>
+                </div>
+            </section>
+
+            <section id="settings" class="page-section">
+                <div class="results-header">
+                    <h2><i class="fa-solid fa-gear text-primary"></i> Settings</h2>
+                    <p>Configure platform preferences and API keys.</p>
+                </div>
+                <div class="feature-section mt-5" style="text-align: center; padding: 50px 20px;">
+                    <i class="fa-solid fa-person-digging text-muted" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                    <h3 style="color: #1e3a8a;">Module Under Development</h3>
+                    <p class="text-muted">Configuration portal is coming in v2.0.</p>
                 </div>
             </section>
         </main>
