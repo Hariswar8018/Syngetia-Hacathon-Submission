@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 const { GoogleGenAI } = require('@google/genai');
+const axios = require('axios');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -10,8 +11,11 @@ const PORT = process.env.PORT || 3001;
 app.use(cors());
 app.use(express.json());
 
-// Initialize Gemini (Automatically uses GEMINI_API_KEY from environment variables)
-const ai = new GoogleGenAI();
+// Initialize Gemini ONLY if a valid key is provided to prevent ADC browser popups
+let ai = null;
+if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_gemini_api_key_here') {
+    ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+}
 
 app.post('/api/generate-campaign', async (req, res) => {
     const requestData = req.body;
@@ -23,7 +27,40 @@ app.post('/api/generate-campaign', async (req, res) => {
     const pestRisk = requestData.pestRisk || "High - Pink Bollworm";
     const weather = "High Humidity, Intermittent Rain";
     const language = requestData.language || "Marathi";
+    
+    // 1. Call Python ML Service for Engagement Score
+    let engagementScore = 76; // default
+    let heuristics = ["General Campaign Template"];
+    try {
+        const mlPayload = {
+            campaign_product: "Syngenta Recommended",
+            campaign_crop: crop,
+            state: state,
+            district: district,
+            language: language,
+            device_type: "smartphone", // default assumption for prediction
+            grower_age: 45,
+            gender: "male",
+            grower_farm_size: 2.5,
+            month: new Date().getMonth() + 1,
+            dayofweek: new Date().getDay()
+        };
+        
+        // Ensure ML API URL is configurable, default to localhost for demo
+        const mlApiUrl = process.env.ML_API_URL || 'http://localhost:8000/predict';
+        const mlResponse = await axios.post(mlApiUrl, mlPayload, { timeout: 3000 });
+        
+        if (mlResponse.data && mlResponse.data.engagement_percentage) {
+            engagementScore = mlResponse.data.engagement_percentage;
+            if (mlResponse.data.heuristics_used) {
+                heuristics = mlResponse.data.heuristics_used;
+            }
+        }
+    } catch (mlError) {
+        console.warn("ML Service unavailable, using default engagement score:", mlError.message);
+    }
 
+    // 2. Prompt Gemini with the ML Score
     const prompt = `
 You are an expert AI agriculture marketing assistant for Syngenta. 
 Generate a hyperlocal marketing campaign targeting farmers based on the following context:
@@ -32,49 +69,64 @@ Generate a hyperlocal marketing campaign targeting farmers based on the followin
 - Crop: ${crop}
 - Pest Risk: ${pestRisk}
 - Language: ${language}
+- Target Engagement Score: ${engagementScore}% (Optimize messaging to achieve this ML-predicted score)
 
 Return your response ONLY as a raw JSON object (without Markdown formatting or \`\`\`json blocks) with the following exact structure:
 {
     "personas": {
-        "farmerA": {
-            "name": "Farmer A",
-            "profile": "Low literacy | Feature phone",
-            "channel": "Voice Call",
-            "content": "(Write a short 30-word voice call script in ${language} warning about ${pestRisk} for ${crop})",
-            "engagement": 76
+        "traditional": {
+            "name": "Traditional Farmer",
+            "profile": "Age 65+ | Prefers offline trust",
+            "channel": "SMS",
+            "content": "(Write a short SMS in ${language})",
+            "engagement": ${engagementScore - 4}
         },
-        "farmerB": {
-            "name": "Farmer B",
-            "profile": "Smartphone | Tech Savvy",
+        "young": {
+            "name": "Young Progressive Farmer",
+            "profile": "Tech Savvy | Adopts new methods",
             "channel": "WhatsApp",
-            "content": "(Write a WhatsApp message with emojis in ${language})",
-            "engagement": 88
+            "content": "(Write a modern WhatsApp message with emojis in ${language})",
+            "engagement": ${engagementScore + 8}
+        },
+        "lowLiteracy": {
+            "name": "Low Literacy Farmer",
+            "profile": "Feature phone | Audio preferred",
+            "channel": "Voice Call",
+            "content": "(Write a 30-word voice script in ${language})",
+            "engagement": ${engagementScore - 8}
         },
         "retailer": {
             "name": "Retailer",
             "profile": "Inventory Manager",
-            "channel": "SMS",
-            "content": "(Write an English SMS to the retailer to stock up on Amplego/Proclaim)",
-            "engagement": 92
+            "channel": "SMS / App",
+            "content": "(Write an English message to the retailer to stock up)",
+            "engagement": ${engagementScore + 5}
+        },
+        "largeFarm": {
+            "name": "Large Farm Owner",
+            "profile": "High scale | ROI focused",
+            "channel": "Email / WhatsApp",
+            "content": "(Write a professional message focused on ROI and yield protection in English or ${language})",
+            "engagement": ${engagementScore + 12}
         }
     },
     "battleArena": [
         {
             "variant": "Variant A (Fear-based)",
             "message": "(Write a short 1-sentence English fear-based marketing message)",
-            "score": 68,
+            "score": ${Math.max(60, engagementScore - 12)},
             "color": "warning"
         },
         {
             "variant": "Variant B (Profit-based)",
             "message": "(Write a short 1-sentence English profit-based marketing message)",
-            "score": 84,
+            "score": ${Math.min(99, engagementScore + 10)},
             "color": "success"
         },
         {
             "variant": "Variant C (Community-based)",
             "message": "(Write a short 1-sentence English community-based marketing message)",
-            "score": 72,
+            "score": ${engagementScore - 4},
             "color": "primary"
         }
     ]
@@ -84,7 +136,7 @@ Return your response ONLY as a raw JSON object (without Markdown formatting or \
     try {
         let aiGeneratedContent;
         
-        if (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'your_gemini_api_key_here') {
+        if (ai) {
             const response = await ai.models.generateContent({
                 model: 'gemini-2.5-flash',
                 contents: prompt
@@ -97,32 +149,16 @@ Return your response ONLY as a raw JSON object (without Markdown formatting or \
             console.warn("GEMINI_API_KEY not set. Using fallback mock data.");
             aiGeneratedContent = {
                 personas: {
-                    farmerA: {
-                        name: "Farmer A",
-                        profile: "Age 58 | Feature phone | Low literacy | Marathi",
-                        channel: "Voice Call",
-                        content: "[Mock] नमस्कार! सिंजेंटा तर्फे हा एक महत्त्वाचा संदेश आहे. यवतमाळ जिल्ह्यात सध्याच्या हवामानामुळे कापसावर गुलाबी बोंडअळीचा धोका वाढला आहे. कृपया त्वरित Amplego ची फवारणी करा आणि आपले पीक वाचवा.",
-                        engagement: 76
-                    },
-                    farmerB: {
-                        name: "Farmer B",
-                        profile: "Age 24 | Smartphone | Tech Savvy | Marathi/English",
-                        channel: "WhatsApp",
-                        content: "[Mock] 🚨 *High Risk Alert: Pink Bollworm* 🚨\nनमस्कार शेतकरी मित्रांनो, तुमच्या कापूस पिकामध्ये गुलाबी बोंडअळीचा प्रादुर्भाव होण्याची दाट शक्यता आहे.\n\n🛡️ *Solution:* 'Amplego' किंवा 'Proclaim' फवारणी करा.\n\n👇 *Click below to find the nearest dealer.*",
-                        engagement: 88
-                    },
-                    retailer: {
-                        name: "Retailer / Dealer",
-                        profile: "Inventory Manager | Smartphone | Quick Actions",
-                        channel: "SMS & App Notification",
-                        content: "[Mock] Dealer Alert: High demand expected for Amplego & Proclaim in Yavatmal due to Pink Bollworm risk. Current stock: 45 units. Recommended restock: 200 units. Reply 'ORDER' to process.",
-                        engagement: 92
-                    }
+                    traditional: { name: "Traditional Farmer", profile: "Age 65+ | Prefers offline trust", channel: "SMS", content: "[Mock] नमस्कार! गुलाबी बोंडअळीचा धोका वाढला आहे.", engagement: engagementScore - 4 },
+                    young: { name: "Young Progressive Farmer", profile: "Tech Savvy | Adopts new methods", channel: "WhatsApp", content: "[Mock] 🚨 High Risk Alert 🚨", engagement: engagementScore + 8 },
+                    lowLiteracy: { name: "Low Literacy Farmer", profile: "Feature phone | Audio preferred", channel: "Voice Call", content: "[Mock] नमस्कार शेतकरी मित्रांनो! त्वरीत फवारणी करा.", engagement: engagementScore - 8 },
+                    retailer: { name: "Retailer", profile: "Inventory Manager", channel: "SMS", content: "[Mock] Restock alert for Amplego.", engagement: engagementScore + 5 },
+                    largeFarm: { name: "Large Farm Owner", profile: "High scale | ROI focused", channel: "WhatsApp", content: "[Mock] Protect your ROI. Secure yield against Pink Bollworm.", engagement: engagementScore + 12 }
                 },
                 battleArena: [
-                    { variant: "Variant A (Fear-based)", message: "[Mock] Pink Bollworm risk is critical this week.", score: 68, color: "warning" },
-                    { variant: "Variant B (Profit-based)", message: "[Mock] Protect your yield and increase your returns.", score: 84, color: "success" },
-                    { variant: "Variant C (Community-based)", message: "[Mock] Farmers nearby are already taking action.", score: 72, color: "primary" }
+                    { variant: "Variant A (Fear-based)", message: "[Mock] Risk is critical.", score: 68, color: "warning" },
+                    { variant: "Variant B (Profit-based)", message: "[Mock] Protect your yield.", score: 84, color: "success" },
+                    { variant: "Variant C (Community-based)", message: "[Mock] Farmers are acting.", score: 72, color: "primary" }
                 ]
             };
         }
@@ -144,7 +180,7 @@ Return your response ONLY as a raw JSON object (without Markdown formatting or \
                     step: "Signal Detection",
                     icon: "fa-cloud-rain",
                     title: "Weather Signal",
-                    desc: "High humidity (85%) & rain in " + district
+                    desc: "High humidity & rain in " + district
                 },
                 {
                     step: "Risk Prediction",
@@ -153,36 +189,40 @@ Return your response ONLY as a raw JSON object (without Markdown formatting or \
                     desc: "70% probability of " + pestRisk
                 },
                 {
+                    step: "ML Engagement Prediction",
+                    icon: "fa-brain",
+                    title: `Expected: ${engagementScore}%`,
+                    desc: "Predicted by ML Model (.pkl)"
+                },
+                {
                     step: "AI Strategy",
                     icon: "fa-bullseye",
                     title: "Campaign Strategy",
-                    desc: "Targeting tailored per Persona"
-                },
-                {
-                    step: "Outcome Prediction",
-                    icon: "fa-chart-line",
-                    title: "Expected Engagement",
-                    desc: "Based on real-time optimization"
+                    desc: "Targeting tailored per Persona via Gemini"
                 }
-            ]
+            ],
+            // Include heuristics for the frontend to display
+            mlIntelligence: {
+                score: engagementScore,
+                heuristics: heuristics
+            }
         };
 
         if (db.hasDb()) {
             const campaignName = pestRisk.split('-')[1]?.trim() + " Alert" || "Campaign " + mockResponse.campaignDetails.id;
             const region = `${district}, ${state}`;
-            const engagement = mockResponse.personas.farmerB.engagement; 
             
             db.query(
                 `INSERT INTO campaigns (campaign_name, crop, region, language, engagement_prediction) 
                  VALUES ($1, $2, $3, $4, $5)`,
-                [campaignName, crop, region, language, engagement]
+                [campaignName, crop, region, language, engagementScore]
             ).catch(err => console.error("DB Insert Error:", err));
         }
 
         res.json(mockResponse);
 
     } catch (error) {
-        console.error("Gemini Generation Error:", error);
+        console.error("API Generation Error:", error);
         res.status(500).json({ status: "error", message: "Failed to generate AI content" });
     }
 });
